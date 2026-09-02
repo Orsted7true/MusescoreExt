@@ -1,0 +1,25 @@
+{
+    "manifest_version": 3,
+    "name": "MuseScore PDF Helper",
+    "version": "1.0",
+
+    "permissions": [
+      "activeTab",
+      "scripting",
+      "webRequest"
+    ],
+
+    "host_permissions": [
+      "https://musescore.com/*",
+      "https://*.musescore.com/*"
+    ],
+
+    "action": {
+      "default_popup": "menu.html"
+    },
+
+    "background": {
+      "service_worker": "background.js"
+}
+    
+}
