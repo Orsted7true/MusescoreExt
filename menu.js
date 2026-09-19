@@ -1,7 +1,7 @@
 const button = document.getElementById("scanButton");
 const status = document.getElementById("status");
 
-async function createPdf(scores) {
+async function createPdf(scores, title) {
 
     const { jsPDF } = window.jspdf;
 
@@ -69,7 +69,7 @@ async function createPdf(scores) {
     }
 
 
-    pdf.save("score.pdf");
+    pdf.save(`${title}.pdf`);
 }
 
 button.addEventListener("click", async () => {
@@ -89,19 +89,26 @@ button.addEventListener("click", async () => {
 
         func: () => {
 
-            const items = performance
+            const firstScore = performance
                 .getEntriesByType("resource")
                 .map(resource => resource.name)
                 .find(url => /score_\d+\.svg/.test(url));
 
-            console.log("Found items:", items);
-            return items;
+            console.log("Found first score:", firstScore);
+
+            // Now we also get the title of the score from the page
+            const title = document
+                .querySelector("h1 span")
+                ?.textContent
+                ?.trim();
+            return { firstScore, title };
         }
 
 
     });
 
-    const firstScore = response[0].result;
+    const firstScore = response[0].result.firstScore;
+    const title = response[0].result.title;
     const scores = await chrome.runtime.sendMessage({
         type: "GET_SCORES",
         tabId: currentTab.id
@@ -120,5 +127,5 @@ button.addEventListener("click", async () => {
     });
 
     console.log("Scores:", scores);
-    await createPdf(scores);
+    await createPdf(scores, title);
 });

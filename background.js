@@ -60,3 +60,30 @@ chrome.tabs.onRemoved.addListener(
         );
     }
 );
+
+
+//if we decide to go to another score on the same tab
+async function handleNavigation(details) {
+
+    if (details.frameId !== 0) {
+        return;
+    }
+
+    console.log(
+        "Main frame navigation:",
+        details.tabId,
+        details.url
+    );
+
+    await chrome.storage.session.remove(
+        `scores_${details.tabId}`
+    );
+}
+
+chrome.webNavigation.onCommitted.addListener(
+    handleNavigation
+);
+
+chrome.webNavigation.onHistoryStateUpdated.addListener(
+    handleNavigation
+);
