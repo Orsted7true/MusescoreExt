@@ -1,6 +1,77 @@
 const button = document.getElementById("scanButton");
 const status = document.getElementById("status");
 
+async function createPdf(scores) {
+
+    const { jsPDF } = window.jspdf;
+
+    let pdf = null;
+
+    for (let i = 0; i < scores.length; i++) {
+
+        const url = scores[i];
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error(
+                `Failed to download SVG: ${response.status}`
+            );
+        }
+
+        const svgText = await response.text();
+
+        const svgDocument =
+            new DOMParser().parseFromString(
+                svgText,
+                "image/svg+xml"
+            );
+
+        const svg = svgDocument.documentElement;
+
+        width = parseFloat(
+            svg.getAttribute("width")
+        );
+
+        height = parseFloat(
+            svg.getAttribute("height")
+        );
+
+        const orientation =
+            width > height
+                ? "landscape"
+                : "portrait";
+
+
+        if (pdf === null) {
+
+            pdf = new jsPDF({
+                orientation: orientation,
+                unit: "pt",
+                format: [width, height]
+            });
+
+        } else {
+
+            pdf.addPage(
+                [width, height],
+                orientation
+            );
+        }
+
+
+        await pdf.svg(svg, {
+            x: 0,
+            y: 0,
+            width: width,
+            height: height
+        });
+    }
+
+
+    pdf.save("score.pdf");
+}
+
 button.addEventListener("click", async () => {
     const tabs = await chrome.tabs.query({
         active: true,
@@ -49,4 +120,5 @@ button.addEventListener("click", async () => {
     });
 
     console.log("Scores:", scores);
+    await createPdf(scores);
 });

@@ -49,7 +49,7 @@ chrome.runtime.onMessage.addListener(
 );
 
 
-// We do not need the data for a tab anymore when it is closed, so we can remove it from the Map and session storage
+// We do not need the data for a tab anymore when it is closed, so we can remove it from session storage
 chrome.tabs.onRemoved.addListener(
     async (tabId) => {
 
