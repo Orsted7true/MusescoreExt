@@ -31,8 +31,9 @@ button.addEventListener("click", async () => {
     });
 
     const firstScore = response[0].result;
-    let scores = await chrome.runtime.sendMessage({
-        type: "GET_SCORES"
+    const scores = await chrome.runtime.sendMessage({
+        type: "GET_SCORES",
+        tabId: currentTab.id
     });
 
     scores.push(firstScore);
